@@ -15,8 +15,8 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from telethon import events, Button
-from userbot.plugins.mybot import started, helpmefast, forping
-import html
+from userbot.plugins.mybot import started, helpmefast, whoareyou, helpmeowner
+import html, time
 from telethon.tl.functions.photos import GetUserPhotosRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import MessageEntityMentionName
@@ -32,6 +32,8 @@ from telethon import events, Button
 from userbot import ALIVE_NAME
 from heroku_config import Var
 from userbot import bot
+from userbot.__init__ import StartTime
+from datetime import datetime
 
 DEF = str(ALIVE_NAME) if ALIVE_NAME else "TeleBot"
 
@@ -47,24 +49,50 @@ async def thisfn(event):
      
 @tgbot.on(events.NewMessage(pattern="^/help"))
 async def thisfn(event):
-    await tgbot.send_message(
-           event.chat_id,
-           message=helpmefast,
-           link_preview = False,
-           buttons = [
-           [Button.url("TeleBot", "https://t.me/TeleBotSupport")]
-            ]
-      )
-      
+    if event.from_id == bot.uid:
+        await tgbot.send_message(
+            event.chat_id,
+            message=helpmeowner,
+            link_preview = False,
+            buttons = [
+            [Button.url("TeleBot", "https://t.me/TeleBotSupport")]
+                ]
+        )
+    else:
+        await tgbot.send_message(
+            event.chat_id,
+            message=helpmefast,
+            link_preview = False,
+            buttons = [
+            [Button.url("Repo", "https://github.com/xditya/TeleBot")]
+            [Button.url("Deploy", "https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot&template=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot")]
+                ]
+        )
 @tgbot.on(events.NewMessage(pattern="^/ping"))
 async def thisfn(event):
-    await tgbot.send_message(
-           event.chat_id,
-           message=forping,
-           buttons = [
-           [Button.url("Deploy", "https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot&template=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot")]
-            ]
-      )
+    
+    if event.from_id == bot.uid:
+        start = datetime.now()
+        end = datetime.now()
+        ms = (end - start).microseconds / 1000
+        forping = f"🏓Ping speed: {ms}"
+        await tgbot.send_message(
+            event.chat_id,
+            message=forping,
+            buttons = [
+            [Button.url("Deploy", "https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot&template=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot")]
+                ]
+        )
+    else:
+        await tgbot.send_message(
+            event.chat_id,
+            message=whoareyou,
+            link_preview = False,
+            buttons = [
+            [Button.url("Repo", "https://github.com/xditya/TeleBot")]
+            [Button.url("Deploy", "https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot&template=https%3A%2F%2Fgithub.com%2Fxditya%2FTeleBot")]
+                ]
+        )
 
 @tgbot.on(events.NewMessage(pattern="^/info ?(.*)"))
 async def _(event):
